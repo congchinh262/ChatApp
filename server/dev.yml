@@ -1,0 +1,33 @@
+version: "3.4"
+services:
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+  db: 
+    image: "postgres:13-alpine"
+    command: "-c max_connections=10000 -c shared_buffers=4096MB -c log_min_duration_statement=2000"
+    ports:
+      - 5432:5432
+    environment: 
+      POSTGRES_DB: chatapp
+      POSTGRES_PASSWORD: dev
+      POSTGRES_USER: dev
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: dev
+      MONGO_INITDB_ROOT_PASSWORD: dev
+      MONGO_INITDB_DATABASE: dev
+  mongo-express:
+    depends_on:
+      - mongo
+    image: mongo-express
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: dev
+      ME_CONFIG_MONGODB_ADMINPASSWORD: dev
+      ME_CONFIG_MONGODB_URL: mongodb://dev:dev@mongo:27017/dev?authSource=admin
