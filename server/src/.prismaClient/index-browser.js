@@ -110,7 +110,10 @@ exports.Prisma.UserScalarFieldEnum = makeEnum({
   id: 'id',
   name: 'name',
   password: 'password',
-  type: 'type'
+  email: 'email',
+  type: 'type',
+  verified: 'verified',
+  verifyHash: 'verifyHash'
 });
 exports.UserType = makeEnum({
   USER: 'USER',

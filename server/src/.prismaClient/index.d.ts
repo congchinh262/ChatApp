@@ -20,7 +20,10 @@ export type User = {
   id: number
   name: string
   password: string
+  email: string
   type: UserType
+  verified: boolean
+  verifyHash: string | null
 }
 
 
@@ -844,21 +847,30 @@ export namespace Prisma {
     id: number | null
     name: string | null
     password: string | null
+    email: string | null
     type: UserType | null
+    verified: boolean | null
+    verifyHash: string | null
   }
 
   export type UserMaxAggregateOutputType = {
     id: number | null
     name: string | null
     password: string | null
+    email: string | null
     type: UserType | null
+    verified: boolean | null
+    verifyHash: string | null
   }
 
   export type UserCountAggregateOutputType = {
     id: number
     name: number
     password: number
+    email: number
     type: number
+    verified: number
+    verifyHash: number
     _all: number
   }
 
@@ -875,21 +887,30 @@ export namespace Prisma {
     id?: true
     name?: true
     password?: true
+    email?: true
     type?: true
+    verified?: true
+    verifyHash?: true
   }
 
   export type UserMaxAggregateInputType = {
     id?: true
     name?: true
     password?: true
+    email?: true
     type?: true
+    verified?: true
+    verifyHash?: true
   }
 
   export type UserCountAggregateInputType = {
     id?: true
     name?: true
     password?: true
+    email?: true
     type?: true
+    verified?: true
+    verifyHash?: true
     _all?: true
   }
 
@@ -989,7 +1010,10 @@ export namespace Prisma {
     id: number
     name: string
     password: string
+    email: string
     type: UserType
+    verified: boolean
+    verifyHash: string | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -1015,7 +1039,10 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     password?: boolean
+    email?: boolean
     type?: boolean
+    verified?: boolean
+    verifyHash?: boolean
   }
 
 
@@ -1811,7 +1838,10 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     password: 'password',
-    type: 'type'
+    email: 'email',
+    type: 'type',
+    verified: 'verified',
+    verifyHash: 'verifyHash'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -1829,27 +1859,38 @@ export namespace Prisma {
     id?: IntFilter | number
     name?: StringFilter | string
     password?: StringFilter | string
+    email?: StringFilter | string
     type?: EnumUserTypeFilter | UserType
+    verified?: BoolFilter | boolean
+    verifyHash?: StringNullableFilter | string | null
   }
 
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
     password?: SortOrder
+    email?: SortOrder
     type?: SortOrder
+    verified?: SortOrder
+    verifyHash?: SortOrder
   }
 
   export type UserWhereUniqueInput = {
     id?: number
     name?: string
+    email?: string
     id_name?: UserIdNameCompoundUniqueInput
+    id_email?: UserIdEmailCompoundUniqueInput
   }
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
     password?: SortOrder
+    email?: SortOrder
     type?: SortOrder
+    verified?: SortOrder
+    verifyHash?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -1864,53 +1905,77 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter | number
     name?: StringWithAggregatesFilter | string
     password?: StringWithAggregatesFilter | string
+    email?: StringWithAggregatesFilter | string
     type?: EnumUserTypeWithAggregatesFilter | UserType
+    verified?: BoolWithAggregatesFilter | boolean
+    verifyHash?: StringNullableWithAggregatesFilter | string | null
   }
 
   export type UserCreateInput = {
     name: string
     password: string
+    email?: string
     type: UserType
+    verified?: boolean
+    verifyHash?: string | null
   }
 
   export type UserUncheckedCreateInput = {
     id?: number
     name: string
     password: string
+    email?: string
     type: UserType
+    verified?: boolean
+    verifyHash?: string | null
   }
 
   export type UserUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
     type?: EnumUserTypeFieldUpdateOperationsInput | UserType
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifyHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
     type?: EnumUserTypeFieldUpdateOperationsInput | UserType
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifyHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserCreateManyInput = {
     id?: number
     name: string
     password: string
+    email?: string
     type: UserType
+    verified?: boolean
+    verifyHash?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
     type?: EnumUserTypeFieldUpdateOperationsInput | UserType
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifyHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
     type?: EnumUserTypeFieldUpdateOperationsInput | UserType
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifyHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type IntFilter = {
@@ -1946,16 +2011,44 @@ export namespace Prisma {
     not?: NestedEnumUserTypeFilter | UserType
   }
 
+  export type BoolFilter = {
+    equals?: boolean
+    not?: NestedBoolFilter | boolean
+  }
+
+  export type StringNullableFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    mode?: QueryMode
+    not?: NestedStringNullableFilter | string | null
+  }
+
   export type UserIdNameCompoundUniqueInput = {
     id: number
     name: string
+  }
+
+  export type UserIdEmailCompoundUniqueInput = {
+    id: number
+    email: string
   }
 
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     password?: SortOrder
+    email?: SortOrder
     type?: SortOrder
+    verified?: SortOrder
+    verifyHash?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -1966,14 +2059,20 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     password?: SortOrder
+    email?: SortOrder
     type?: SortOrder
+    verified?: SortOrder
+    verifyHash?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     password?: SortOrder
+    email?: SortOrder
     type?: SortOrder
+    verified?: SortOrder
+    verifyHash?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -2024,12 +2123,46 @@ export namespace Prisma {
     _max?: NestedEnumUserTypeFilter
   }
 
+  export type BoolWithAggregatesFilter = {
+    equals?: boolean
+    not?: NestedBoolWithAggregatesFilter | boolean
+    _count?: NestedIntFilter
+    _min?: NestedBoolFilter
+    _max?: NestedBoolFilter
+  }
+
+  export type StringNullableWithAggregatesFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter | string | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedStringNullableFilter
+    _max?: NestedStringNullableFilter
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
 
   export type EnumUserTypeFieldUpdateOperationsInput = {
     set?: UserType
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -2070,6 +2203,25 @@ export namespace Prisma {
     in?: Enumerable<UserType>
     notIn?: Enumerable<UserType>
     not?: NestedEnumUserTypeFilter | UserType
+  }
+
+  export type NestedBoolFilter = {
+    equals?: boolean
+    not?: NestedBoolFilter | boolean
+  }
+
+  export type NestedStringNullableFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    not?: NestedStringNullableFilter | string | null
   }
 
   export type NestedIntWithAggregatesFilter = {
@@ -2124,6 +2276,42 @@ export namespace Prisma {
     _count?: NestedIntFilter
     _min?: NestedEnumUserTypeFilter
     _max?: NestedEnumUserTypeFilter
+  }
+
+  export type NestedBoolWithAggregatesFilter = {
+    equals?: boolean
+    not?: NestedBoolWithAggregatesFilter | boolean
+    _count?: NestedIntFilter
+    _min?: NestedBoolFilter
+    _max?: NestedBoolFilter
+  }
+
+  export type NestedStringNullableWithAggregatesFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    not?: NestedStringNullableWithAggregatesFilter | string | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedStringNullableFilter
+    _max?: NestedStringNullableFilter
+  }
+
+  export type NestedIntNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableFilter | number | null
   }
 
 

@@ -4,7 +4,10 @@ import bcrypt from "bcrypt";
 import { User, UserType, prismaClient, prismaClientRo } from "../models/prisma";
 import { AuthHelpers } from "../helpers/auth";
 import { CustomRequest } from "../types/types";
-
+import { randomBytes } from "crypto";
+import { send } from "process";
+import { sendMail, validateEmail } from "../helpers/smtp";
+import { validate } from "superstruct";
 export const getAllUsers = (req: Request, res: Response) => {
   return prismaClientRo.user
     .findMany({
@@ -29,11 +32,19 @@ export const getAllUsers = (req: Request, res: Response) => {
 };
 export const register = (req: Request, res: Response) => {
   const {
-    userName,
+    username,
     password,
+    email,
     type,
-  }: { userName: string; password: string; type: UserType } = req.body;
-  if (!userName || !password) {
+  }: { username: string; password: string; email: string; type: UserType } =
+    req.body;
+  if (!username || !password || email || type) {
+    return res.status(400).send({
+      success: false,
+      errorMessage: "Bad request!",
+    });
+  }
+  if(!validateEmail(email)){
     return res.status(400).send({
       success: false,
       errorMessage: "Bad request!",
@@ -42,15 +53,34 @@ export const register = (req: Request, res: Response) => {
   bcrypt
     .hash(password, 10)
     .then((hash) => {
+      const verifyHash = randomBytes(128).toString("hex");
+      // if(!AuthHelpers.validateInfo({username,password,email})){
+      //   return res.status(400).send(JSON.stringify({
+      //     success:false,
+      //     message: "Bad request!"
+      //   }))
+      // }
       return prismaClient.user.create({
         data: {
-          name: userName,
+          name: username,
           password: hash,
           type: type,
+          email,
+          verifyHash: verifyHash,
         },
       });
     })
-    .then((user) => {
+    .then(async (user) => {
+      //TODO: send email
+      const verifyLink = `http://${req.get("host")}/verifyRegister?id=${
+        user.id
+      }&hash=${user.verifyHash}`;
+      const html = `Hello,<br> Please Click on the link to verify your account.<br><a href="${verifyLink}">Click here to verify</a>`;
+      await sendMail({
+        to: user.email,
+        subject: "Verify your account",
+        html
+      });
       return res.send({
         success: true,
         data: {
@@ -146,6 +176,13 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
           message: "Invalid user name or password!",
         });
       }
+      if (user.verified !== true) {
+        return res.status(401).send({
+          success: false,
+          message:
+            "Your account is not verified yet, please check for verify mail.",
+        });
+      }
       const authToken = AuthHelpers.createJwt(user.id, user.type);
       return res.status(200).send({
         success: true,
@@ -158,4 +195,29 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
         message: String(e),
       });
     });
+};
+
+export const verify = async (req: Request, res: Response) => {
+  const { id, hashToken } = req.query;
+  const isVerified = await verifyRegister(hashToken as string, Number(id));
+  if (!isVerified) {
+    return res.status(401).send(
+      JSON.stringify({
+        success: false,
+        message: "Unauthorized!",
+      })
+    );
+  }
+  return res.redirect(301, "/n");
+};
+
+const verifyRegister = async (hash: string, userId: number) => {
+  const user = await prismaClient.user.findFirst({
+    where: {
+      id: userId,
+      verified: false,
+      verifyHash: hash,
+    },
+  });
+  return user ? true : false;
 };

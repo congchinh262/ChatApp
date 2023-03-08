@@ -1,5 +1,4 @@
 import mongoose, { model, Schema } from "mongoose";
-import { createSchema, Type, typedModel } from "ts-mongoose";
 
 //#region type
 // interface IUser {
