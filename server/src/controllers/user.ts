@@ -72,7 +72,6 @@ export const register = (req: Request, res: Response) => {
       });
     })
     .then(async (user) => {
-      //TODO: send email
       const verifyLink = `http://${req.get("host")}/user/verifyRegister?id=${
         user.id
       }&hash=${user.verifyHash}`;
