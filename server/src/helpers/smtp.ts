@@ -3,36 +3,37 @@ import Mail from "nodemailer/lib/mailer";
 import { NODE_MAILER_CONFIG } from "../config";
 
 const transporter = nodemailer.createTransport({
+  host: NODE_MAILER_CONFIG.HOSTNAME,
   service: "gmail",
-  port: 587,
+  port: 465,
   secure: false,
   requireTLS: true,
-  auth: {
+  auth: {  
     user: NODE_MAILER_CONFIG.USERNAME,
     pass: NODE_MAILER_CONFIG.PASSWORD,
   },
   logger: true,
 });
 
-export const sendMail = (params: {
+export const sendMail = async (params: {
   to: string;
   subject: string;
   text?: string;
   html: string;
 }) => {
   const { to, subject, text, html } = params;
-  transporter
+  try{
+    await transporter
     .sendMail({
       from: NODE_MAILER_CONFIG.FROM,
       to,
       subject,
       text: text ?? undefined,
       html,
-      headers: { "x-myheader": "test header" },
     })
-    .catch((err: Error) => {
-      throw new Error(err.message);
-    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const validateEmail = (email: string) => {

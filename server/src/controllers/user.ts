@@ -8,6 +8,13 @@ import { randomBytes } from "crypto";
 import { send } from "process";
 import { sendMail, validateEmail } from "../helpers/smtp";
 import { validate } from "superstruct";
+
+const MOCK_USER = {
+  email: 'congchinh262@gmail.com'
+}
+
+const _isDev = true;
+
 export const getAllUsers = (req: Request, res: Response) => {
   return prismaClientRo.user
     .findMany({
@@ -38,28 +45,22 @@ export const register = (req: Request, res: Response) => {
     type,
   }: { username: string; password: string; email: string; type: UserType } =
     req.body;
-  if (!username || !password || email || type) {
+  if (!username || !password || !email || !type) {
     return res.status(400).send({
       success: false,
       errorMessage: "Bad request!",
     });
   }
-  if(!validateEmail(email)){
+  if (!validateEmail(email)) {
     return res.status(400).send({
       success: false,
-      errorMessage: "Bad request!",
+      errorMessage: "Invalid Email",
     });
   }
   bcrypt
     .hash(password, 10)
     .then((hash) => {
       const verifyHash = randomBytes(128).toString("hex");
-      // if(!AuthHelpers.validateInfo({username,password,email})){
-      //   return res.status(400).send(JSON.stringify({
-      //     success:false,
-      //     message: "Bad request!"
-      //   }))
-      // }
       return prismaClient.user.create({
         data: {
           name: username,
@@ -72,20 +73,32 @@ export const register = (req: Request, res: Response) => {
     })
     .then(async (user) => {
       //TODO: send email
-      const verifyLink = `http://${req.get("host")}/verifyRegister?id=${
+      const verifyLink = `http://${req.get("host")}/user/verifyRegister?id=${
         user.id
       }&hash=${user.verifyHash}`;
+      console.log('==========VERIFY-LINK=============');
+      console.log(verifyLink)
+      console.log('==========/VERIFY-LINK/=============');
       const html = `Hello,<br> Please Click on the link to verify your account.<br><a href="${verifyLink}">Click here to verify</a>`;
-      await sendMail({
-        to: user.email,
-        subject: "Verify your account",
-        html
-      });
+      // TODO: clean up
+      try{
+        await sendMail({
+          to: _isDev ? MOCK_USER.email : user.email,
+          subject: "Verify your account",
+          html,
+        });
+      } catch(error){
+        res.status(500).send({
+          success: false,
+          message: "send email failed",
+        });
+      }
       return res.send({
         success: true,
         data: {
           id: user.id,
           name: user.name,
+          message: "Please check your email to verify your account!",
         },
       });
     })
@@ -199,7 +212,7 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
 
 export const verify = async (req: Request, res: Response) => {
   const { id, hashToken } = req.query;
-  const isVerified = await verifyRegister(hashToken as string, Number(id));
+  const isVerified = await verifyRegister(hashToken as string, parseInt(id as string));
   if (!isVerified) {
     return res.status(401).send(
       JSON.stringify({
@@ -208,10 +221,20 @@ export const verify = async (req: Request, res: Response) => {
       })
     );
   }
-  return res.redirect(301, "/n");
+  await prismaClient.user.update({
+    data:{
+      verified: true,
+      verifyHash: null,
+    },
+    where:{
+      id: parseInt(id as string),
+    }
+  })
+  return res.status(200).send(JSON.stringify({ success: true, message: "OK" }));
 };
 
 const verifyRegister = async (hash: string, userId: number) => {
+  // TODO: check case
   const user = await prismaClient.user.findFirst({
     where: {
       id: userId,

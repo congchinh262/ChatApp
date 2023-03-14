@@ -143,7 +143,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "D:\\projects\\ChatApp\\server\\src\\.prismaClient",
+      "value": "D:\\Projects\\ChatApp\\server\\src\\.prismaClient",
       "fromEnvVar": null
     },
     "config": {

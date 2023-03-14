@@ -18,9 +18,9 @@ export const REDIS_CONFIG = {
 };
 
 export const NODE_MAILER_CONFIG = {
-  HOSTNAME: process.env.HOSTNAME || "",
-  USERNAME: process.env.USERNAME || "",
-  PASSWORD: process.env.PASSWORD || "",
-  FROM: process.env.FROM || ""
+  HOSTNAME: process.env.NM_HOSTNAME || "smtp.gmail.com",
+  USERNAME: process.env.NM_USERNAME || "",
+  PASSWORD: process.env.NM_PASSWORD || "",
+  FROM: process.env.NM_FROM || ""
 };
 export const MONGO_DATABASE_URL = `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@atlascluster.4rvi6o4.mongodb.net/chatdb?authSource=admin`;
