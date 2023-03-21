@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { Button, Checkbox, Form, Input, Alert, Layout } from "antd";
+import { Button, Checkbox, Form, Input, Alert, Layout, Modal } from "antd";
 import { BASE_API_URL } from "../configs";
 import { useNavigate } from "react-router-dom";
-const { Header, Content, Footer } = Layout;
+const { Content } = Layout;
 
 const Context = React.createContext({ name: "Default" });
 
 function Register() {
   const [data, setData] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
   let navigate = useNavigate();
   const fetchData = async (body: any) => {
     try {
@@ -41,6 +42,13 @@ function Register() {
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
+  // const handleOk = () => {
+  //   setIsModalOpen(false);
+  // };
+
+  // const handleCancel = () => {
+  //   setIsModalOpen(false);
+  // };
   return (
     <Content
       style={{
@@ -49,7 +57,7 @@ function Register() {
         left: "50%",
         transform: "translate(-50%, -50%)",
         boxShadow: "0 3px 10px rgb(0 0 0 / 0.2)",
-        borderRadius: "15px"
+        borderRadius: "15px",
       }}
     >
       <Form
@@ -86,14 +94,6 @@ function Register() {
           <Input.Password />
         </Form.Item>
 
-        <Form.Item
-          name="remember"
-          valuePropName="checked"
-          wrapperCol={{ offset: 8, span: 16 }}
-        >
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
-
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit" disabled={loading}>
             Sign up
@@ -102,6 +102,20 @@ function Register() {
         <Form.Item wrapperCol={{ offset: 1, span: 32 }}>
           Already have an account ? <a href="/login">Login</a> here
         </Form.Item>
+        {/* <Modal
+          title="Basic Modal"
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+        >
+          <div>
+            Your verify email has been sent to your email, please verify an
+            email
+          </div>
+          <Button type="primary">
+            <a href="/login">Login</a>
+          </Button>
+        </Modal> */}
       </Form>
     </Content>
   );
