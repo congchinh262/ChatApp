@@ -8,6 +8,7 @@ import { createRoom, listRooms } from "../controllers/chatRoom";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import { SECRET_KEY } from "../config";
+import { authForSocket } from "../middlewares/socket";
 
 const _rooms: Record<string, { name: string }> = {};
 
@@ -24,17 +25,15 @@ export const socket = ({ io }: { io: Server }) => {
   const errorHandler = (err: Error) => {
     io.emit(EVENTS.SERVER.ON_ERROR, err);
   };
+  io.use((socket)=>{
+    authForSocket(socket,(err)=>{
+      if(err){
+        errorHandler(err as Error);
+      }
+    });
+  })
   io.on(EVENTS.connection, (socket: Socket) => {
     log.info(`User connected ${socket.id} `);
-    try {
-      console.log(socket.handshake.auth);
-      const userInfo = jwt.verify(socket.handshake.auth.token, SECRET_KEY);
-      console.log({ userInfo });
-    } catch (e) {
-      io.on(EVENTS.CONNECTION_ERROR, (err) => {
-        socket.disconnect();
-      });
-    }
     socket.on(EVENTS.CLIENT.CREATE_ROOM, async ({ roomName }) => {
       // create roomId
       try {

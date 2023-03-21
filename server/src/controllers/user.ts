@@ -8,7 +8,7 @@ import { randomBytes } from "crypto";
 import { send } from "process";
 import { sendMail, validateEmail } from "../helpers/smtp";
 import { validate } from "superstruct";
-
+import { validationResult } from "express-validator";
 const MOCK_USER = {
   email: 'congchinh262@gmail.com'
 }
@@ -38,6 +38,13 @@ export const getAllUsers = (req: Request, res: Response) => {
     });
 };
 export const register = (req: Request, res: Response) => {
+  const error = validationResult(req)
+  if(!error.isEmpty()){
+    return res.status(400).send({
+      success: false,
+      errorMessage: "Bad request!",
+    });
+  }
   const {
     username,
     password,
@@ -45,12 +52,13 @@ export const register = (req: Request, res: Response) => {
     type,
   }: { username: string; password: string; email: string; type: UserType } =
     req.body;
-  if (!username || !password || !email || !type) {
-    return res.status(400).send({
-      success: false,
-      errorMessage: "Bad request!",
-    });
-  }
+  // TODO: clean code
+  // if (!username || !password || !email || !type) {
+  //   return res.status(400).send({
+  //     success: false,
+  //     errorMessage: "Bad request!",
+  //   });
+  // }
   if (!validateEmail(email)) {
     return res.status(400).send({
       success: false,
